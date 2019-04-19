@@ -20,6 +20,13 @@ WITH StudentFamilyReps AS
       s.Dcid AS Dcid,
       s.Family_Ident AS Family_Ident,
       scf.Family_Rep As Family_Rep,
+      TO_CHAR('S' || LPAD(DENSE_RANK()
+                          OVER ( PARTITION BY s.Family_Ident
+                          ORDER BY s.Family_Ident ASC,
+                                   scf.Family_Rep DESC NULLS LAST,
+                                   s.Enroll_Status DESC,
+                                   s.Grade_Level ASC,
+                                   s.Student_Number DESC), 2, '0')) AS SiblingIndex,
       s.Enroll_Status AS Enroll_Status,
       s.Grade_Level AS Grade_Level,
       s.Last_Name AS Last_Name,
@@ -63,6 +70,7 @@ WITH StudentFamilyReps AS
 SELECT
   asif.Family_Ident,
   asif.Family_Rep,
+  asif.SiblingIndex,
   asif.Enroll_Status,
   asif.Student_Number,
   asif.Grade_Level
@@ -70,7 +78,7 @@ SELECT
 FROM ActiveStudentsInFamily asif
 
 ORDER BY asif.Family_Ident,
-         asif.Family_Rep,
+         asif.Family_Rep DESC,
          asif.Enroll_Status DESC,
          asif.Grade_Level ASC,
          asif.Student_Number DESC
