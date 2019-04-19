@@ -52,7 +52,9 @@ WITH StudentFamilyReps AS
         WHEN LOWER(ocm.OriginalContactType) = 'mother' THEN 'C1'
         WHEN LOWER(ocm.OriginalContactType) = 'father' THEN 'C2'
         WHEN LOWER(ocm.OriginalContactType) = 'guardian' THEN 'C3'
-      END AS OriginalContactTypeMap
+      END AS OriginalContactTypeMap,
+      p1.LastName AS Last_Name,
+      p1.FirstName AS First_Name
 
     FROM StudentFamilyReps sfr
 
@@ -72,8 +74,11 @@ SELECT
   TO_CHAR(9) AS Family_Rep,
   TO_CHAR(pgfr.OriginalContactTypeMap) AS PersonIndex,
   TO_CHAR(-2) AS Enroll_Status,
+  TO_CHAR('C') AS PersonType,
   TO_CHAR(pgfr.GuardianPersonId) AS PersonNumber,
   TO_CHAR(0) AS Grade_Level,
+  TO_CHAR(pgfr.Last_Name) AS Last_Name,
+  TO_CHAR(pgfr.First_Name) AS First_Name,
   TO_CHAR(sfr.Street)
 
 FROM PrimaryGuardiansOfFamilyReps pgfr
@@ -88,8 +93,11 @@ SELECT
   TO_CHAR(asif.Family_Rep) AS Family_Rep,
   TO_CHAR(asif.SiblingIndex) AS PersonIndex,
   TO_CHAR(asif.Enroll_Status) AS Enroll_Status,
+  TO_CHAR('S') AS PersonType,
   TO_CHAR(asif.Student_Number) AS PersonNumber,
-  TO_CHAR(asif.Grade_Level),
+  TO_CHAR(asif.Grade_Level) AS Grade_Level,
+  TO_CHAR(asif.First_Name) AS First_Name,
+  TO_CHAR(asif.Last_Name) AS Last_Name,
   TO_CHAR(sfr.Street)
 
 FROM ActiveStudentsInFamily asif
