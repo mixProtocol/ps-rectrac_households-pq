@@ -44,3 +44,9 @@ SELECT
   asif.Grade_Level
 
 FROM ActiveStudentsInFamily asif
+
+ORDER BY asif.Family_Ident,
+         asif.Family_Rep,
+         asif.Enroll_Status DESC,
+         asif.Grade_Level ASC,
+         asif.Student_Number DESC
