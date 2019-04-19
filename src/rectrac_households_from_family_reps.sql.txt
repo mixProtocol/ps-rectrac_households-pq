@@ -34,6 +34,25 @@ WITH StudentFamilyReps AS
       ON s.Dcid = scf.StudentsDcid
 
     WHERE s.Enroll_Status <= 0
+  ),
+  PrimaryGuardiansOfFamilyReps AS
+  ( SELECT
+      sfr.Family_Ident AS Family_Ident,
+      sfr.Dcid AS StudentFamilyRepDcid,
+      p1.Id AS GuardianPersonId,
+      ocm.OriginalContactType AS OriginalContactType
+
+    FROM StudentFamilyReps sfr
+
+    JOIN StudentContactAssoc sca
+      ON sfr.Dcid = sca.StudentDcid
+
+    JOIN OriginalContactMap ocm
+      ON sca.StudentContactAssocid = ocm.StudentContactAssocId
+      AND LOWER(ocm.OriginalContactType) IN ('mother', 'father', 'guardian')
+
+    JOIN Person p1
+      ON sca.PersonId = p1.Id
   )
 
 SELECT
