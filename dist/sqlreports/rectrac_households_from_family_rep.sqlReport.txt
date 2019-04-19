@@ -9,7 +9,8 @@
       s.Dcid,
       s.Family_Ident,
       s.Enroll_Status,
-      s.Street
+      s.Street,
+      s.City, s.State, s.Zip
       
     FROM Students s
 
@@ -57,7 +58,9 @@
         WHEN LOWER(ocm.OriginalContactType) = 'mother' THEN 'C1'
         WHEN LOWER(ocm.OriginalContactType) = 'father' THEN 'C2'
         WHEN LOWER(ocm.OriginalContactType) = 'guardian' THEN 'C3'
-      END AS OriginalContactTypeMap
+      END AS OriginalContactTypeMap,
+      p1.LastName AS Last_Name,
+      p1.FirstName AS First_Name
 
     FROM StudentFamilyReps sfr
 
@@ -70,39 +73,51 @@
 
     JOIN Person p1
       ON sca.PersonId = p1.Id
+  ),
+  HouseHoldMembers AS
+  ( SELECT
+      TO_CHAR(pgfr.Family_Ident) AS Family_Ident,
+      TO_CHAR(pgfr.OriginalContactTypeMap) AS PersonIndex,
+      TO_CHAR('C') AS PersonType,
+      TO_CHAR(pgfr.GuardianPersonId) AS PersonNumber,
+      TO_CHAR(0) AS Grade_Level,
+      TO_CHAR(pgfr.First_Name) AS First_Name,
+      TO_CHAR(pgfr.Last_Name) AS Last_Name
+
+    FROM PrimaryGuardiansOfFamilyReps pgfr
+
+    UNION ALL
+    SELECT
+      TO_CHAR(asif.Family_Ident) AS Family_Ident,
+      TO_CHAR(asif.SiblingIndex) AS PersonIndex,
+      TO_CHAR('S') AS PersonType,
+      TO_CHAR(asif.Student_Number) AS PersonNumber,
+      TO_CHAR(asif.Grade_Level) AS Grade_Level,
+      TO_CHAR(asif.First_Name) AS First_Name,
+      TO_CHAR(asif.Last_Name) AS Last_Name
+
+    FROM ActiveStudentsInFamily asif
   )
 
 SELECT
-  TO_CHAR(pgfr.Family_Ident) AS Family_Ident,
-  TO_CHAR(9) AS Family_Rep,
-  TO_CHAR(pgfr.OriginalContactTypeMap) AS PersonIndex,
-  TO_CHAR(-2) AS Enroll_Status,
-  TO_CHAR(pgfr.GuardianPersonId) AS PersonNumber,
-  TO_CHAR(0) AS Grade_Level,
-  TO_CHAR(sfr.Street)
+  hhm.Family_Ident,
+  hhm.PersonIndex,
+  hhm.PersonType,
+  hhm.PersonNumber,
+  hhm.Grade_Level,
+  hhm.Last_Name,
+  hhm.First_Name,
+  sfr.Street,
+  sfr.City, sfr.State, sfr.Zip
 
-FROM PrimaryGuardiansOfFamilyReps pgfr
-
-JOIN StudentFamilyReps sfr
-  ON pgfr.Family_Ident = sfr.Family_Ident
-
-UNION ALL
-
-SELECT
-  TO_CHAR(asif.Family_Ident) AS Family_Ident,
-  TO_CHAR(asif.Family_Rep) AS Family_Rep,
-  TO_CHAR(asif.SiblingIndex) AS PersonIndex,
-  TO_CHAR(asif.Enroll_Status) AS Enroll_Status,
-  TO_CHAR(asif.Student_Number) AS PersonNumber,
-  TO_CHAR(asif.Grade_Level),
-  TO_CHAR(sfr.Street)
-
-FROM ActiveStudentsInFamily asif
+FROM HouseHoldMembers hhm
 
 JOIN StudentFamilyReps sfr
-  ON asif.Family_Ident = sfr.Family_Ident
-</textarea></SQLQuery>
-<ReportHeader><th>Column1</th><th>Column2</th><th>Column3</th><th>Column4</th><th>Column5</th><th>Column6</th><th>Column7</th></ReportHeader>
+  ON hhm.Family_Ident = sfr.Family_Ident
+
+ORDER BY hhm.Family_Ident, hhm.PersonIndex,
+         hhm.Grade_Level, hhm.PersonNumber DESC</textarea></SQLQuery>
+<ReportHeader><th>Column1</th><th>Column2</th><th>Column3</th><th>Column4</th><th>Column5</th><th>Column6</th><th>Column7</th><th>Column8</th><th>Column9</th><th>Column10</th><th>Column11</th></ReportHeader>
 <CreateStudentSelection>0</CreateStudentSelection>
 <StudentSelectionQuery></StudentSelectionQuery>
 <CreateStudentSelectionB></CreateStudentSelectionB>
