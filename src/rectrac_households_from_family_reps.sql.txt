@@ -1,4 +1,5 @@
-    SELECT
+WITH StudentFamilyReps AS 
+  ( SELECT
       s.Student_Number,
       s.Dcid,
       s.Family_Ident,
@@ -12,3 +13,34 @@
       AND scf.Family_Rep = 1
 
     ORDER BY Family_Ident
+  ),
+  ActiveStudentsInFamily AS
+  ( SELECT
+      s.Student_Number AS Student_Number,
+      s.Dcid AS Dcid,
+      s.Family_Ident AS Family_Ident,
+      scf.Family_Rep As Family_Rep,
+      s.Enroll_Status AS Enroll_Status,
+      s.Grade_Level AS Grade_Level,
+      s.Last_Name AS Last_Name,
+      s.First_Name AS First_Name
+
+    FROM Students s
+
+    JOIN StudentFamilyReps sfr
+      ON s.Family_Ident = sfr.Family_Ident
+    
+    JOIN StudentCoreFields scf
+      ON s.Dcid = scf.StudentsDcid
+
+    WHERE s.Enroll_Status <= 0
+  )
+
+SELECT
+  asif.Family_Ident,
+  asif.Family_Rep,
+  asif.Enroll_Status,
+  asif.Student_Number,
+  asif.Grade_Level
+
+FROM ActiveStudentsInFamily asif
