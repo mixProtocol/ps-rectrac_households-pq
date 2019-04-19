@@ -40,7 +40,12 @@ WITH StudentFamilyReps AS
       sfr.Family_Ident AS Family_Ident,
       sfr.Dcid AS StudentFamilyRepDcid,
       p1.Id AS GuardianPersonId,
-      ocm.OriginalContactType AS OriginalContactType
+      ocm.OriginalContactType AS OriginalContactType,
+      CASE
+        WHEN LOWER(ocm.OriginalContactType) = 'mother' THEN 'C1'
+        WHEN LOWER(ocm.OriginalContactType) = 'father' THEN 'C2'
+        WHEN LOWER(ocm.OriginalContactType) = 'guardian' THEN 'C3'
+      END AS OriginalContactTypeMap
 
     FROM StudentFamilyReps sfr
 
