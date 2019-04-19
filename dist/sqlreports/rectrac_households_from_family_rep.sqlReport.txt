@@ -1,0 +1,149 @@
+<ReportName>RecTrac - Households from Family_Rep</ReportName>
+<ReportTitle>RecTrac - Households from Family_Rep</ReportTitle>
+<AfterTitle></AfterTitle>
+<ReportGroup>Application Exports</ReportGroup>
+<ReportDescription>RecTrac - Households from Family_Rep</ReportDescription>
+<SQLQuery><textarea name="UF-0060052575">WITH StudentFamilyReps AS 
+  ( SELECT
+      s.Student_Number,
+      s.Dcid,
+      s.Family_Ident,
+      s.Enroll_Status,
+      s.Street
+      
+    FROM Students s
+
+    JOIN StudentCoreFields scf
+      ON s.Dcid = scf.StudentsDcid
+      AND scf.Family_Rep = 1
+
+    ORDER BY Family_Ident
+  ),
+  ActiveStudentsInFamily AS
+  ( SELECT
+      s.Student_Number AS Student_Number,
+      s.Dcid AS Dcid,
+      s.Family_Ident AS Family_Ident,
+      scf.Family_Rep As Family_Rep,
+      TO_CHAR('S' || LPAD(DENSE_RANK()
+                          OVER ( PARTITION BY s.Family_Ident
+                          ORDER BY s.Family_Ident ASC,
+                                   scf.Family_Rep DESC NULLS LAST,
+                                   s.Enroll_Status DESC,
+                                   s.Grade_Level ASC,
+                                   s.Student_Number DESC), 2, '0')) AS SiblingIndex,
+      s.Enroll_Status AS Enroll_Status,
+      s.Grade_Level AS Grade_Level,
+      s.Last_Name AS Last_Name,
+      s.First_Name AS First_Name
+
+    FROM Students s
+
+    JOIN StudentFamilyReps sfr
+      ON s.Family_Ident = sfr.Family_Ident
+    
+    JOIN StudentCoreFields scf
+      ON s.Dcid = scf.StudentsDcid
+
+    WHERE s.Enroll_Status &lt;= 0
+  ),
+  PrimaryGuardiansOfFamilyReps AS
+  ( SELECT
+      sfr.Family_Ident AS Family_Ident,
+      sfr.Dcid AS StudentFamilyRepDcid,
+      p1.Id AS GuardianPersonId,
+      ocm.OriginalContactType AS OriginalContactType,
+      CASE
+        WHEN LOWER(ocm.OriginalContactType) = 'mother' THEN 'C1'
+        WHEN LOWER(ocm.OriginalContactType) = 'father' THEN 'C2'
+        WHEN LOWER(ocm.OriginalContactType) = 'guardian' THEN 'C3'
+      END AS OriginalContactTypeMap
+
+    FROM StudentFamilyReps sfr
+
+    JOIN StudentContactAssoc sca
+      ON sfr.Dcid = sca.StudentDcid
+
+    JOIN OriginalContactMap ocm
+      ON sca.StudentContactAssocid = ocm.StudentContactAssocId
+      AND LOWER(ocm.OriginalContactType) IN ('mother', 'father', 'guardian')
+
+    JOIN Person p1
+      ON sca.PersonId = p1.Id
+  )
+
+SELECT
+  asif.Family_Ident,
+  asif.Family_Rep,
+  asif.SiblingIndex,
+  asif.Enroll_Status,
+  asif.Student_Number,
+  asif.Grade_Level
+
+FROM ActiveStudentsInFamily asif
+
+ORDER BY asif.Family_Ident,
+         asif.Family_Rep DESC,
+         asif.Enroll_Status DESC,
+         asif.Grade_Level ASC,
+         asif.Student_Number DESC
+</textarea></SQLQuery>
+<ReportHeader><th>Column1</th><th>Column2</th><th>Column3</th><th>Column4</th><th>Column5</th><th>Column6</th></ReportHeader>
+<CreateStudentSelection>0</CreateStudentSelection>
+<StudentSelectionQuery></StudentSelectionQuery>
+<CreateStudentSelectionB></CreateStudentSelectionB>
+<IncludeRowNumber>0</IncludeRowNumber>
+<OpeninNewWindow>0</OpeninNewWindow>
+<HideCopyButton></HideCopyButton>
+<HideCSVButton></HideCSVButton>
+<HideTabButton></HideTabButton>
+<HidePDFButton></HidePDFButton>
+<ShowSearchBox></ShowSearchBox>
+<ShowResultsInfo></ShowResultsInfo>
+<ParameterName1></ParameterName1>
+<ParameterVal1></ParameterVal1>
+<ParameterCal1></ParameterCal1>
+<ParameterOpt1></ParameterOpt1>
+<ParameterName2></ParameterName2>
+<ParameterVal2></ParameterVal2>
+<ParameterCal2></ParameterCal2>
+<ParameterOpt2></ParameterOpt2>
+<ParameterName3></ParameterName3>
+<ParameterVal3></ParameterVal3>
+<ParameterCal3></ParameterCal3>
+<ParameterOpt3></ParameterOpt3>
+<ParameterName4></ParameterName4>
+<ParameterVal4></ParameterVal4>
+<ParameterCal4></ParameterCal4>
+<ParameterOpt4></ParameterOpt4>
+<ParameterName5></ParameterName5>
+<ParameterVal5></ParameterVal5>
+<ParameterCal5></ParameterCal5>
+<ParameterOpt5></ParameterOpt5>
+<PdfOrientation></PdfOrientation>
+<NoCSVQuotes></NoCSVQuotes>
+<NoRowSel></NoRowSel>
+<ShowSHC></ShowSHC>
+<UseColRe></UseColRe>
+<UseFixHdr></UseFixHdr>
+<HidePrint></HidePrint>
+<ReportNotes></ReportNotes>
+<UseColFilt>1</UseColFilt>
+<UseRowGroups></UseRowGroups>
+<UseRowGroupsOptions>Opt1</UseRowGroupsOptions>
+<DisplayRowGroupsCol></DisplayRowGroupsCol>
+<UseRowGroupsCounts></UseRowGroupsCounts>
+<sqlChartsReport></sqlChartsReport>
+<InitialsqlChart></InitialsqlChart>
+<InitialChartName></InitialChartName>
+<RowGroupsDesc></RowGroupsDesc>
+<sqlExportsReport></sqlExportsReport>
+<FLSMapField></FLSMapField>
+<ExcFrmList>1</ExcFrmList>
+<ExecGrp>9,</ExecGrp>
+<ValueLi3>0</ValueLi3>
+<NoHeaderRow></NoHeaderRow>
+<ReportDirections></ReportDirections>
+<HideParams></HideParams>
+<ShowGridlines></ShowGridlines>
+<sqlReportsQ></sqlReportsQ>
