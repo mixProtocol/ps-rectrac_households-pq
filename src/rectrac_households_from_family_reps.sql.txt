@@ -1,0 +1,14 @@
+    SELECT
+      s.Student_Number,
+      s.Dcid,
+      s.Family_Ident,
+      s.Enroll_Status,
+      s.Street
+      
+    FROM Students s
+
+    JOIN StudentCoreFields scf
+      ON s.Dcid = scf.StudentsDcid
+      AND scf.Family_Rep = 1
+
+    ORDER BY Family_Ident
