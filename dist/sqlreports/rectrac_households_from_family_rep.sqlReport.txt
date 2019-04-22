@@ -90,6 +90,7 @@
       TO_CHAR(0) AS Grade_Level,
       TO_CHAR(pgfr.First_Name) AS First_Name,
       TO_CHAR(pgfr.Last_Name) AS Last_Name,
+      TO_CHAR('') AS Email1,
       TO_CHAR(pgfr.Gender) AS Gender,
       TO_CHAR('99/99/9999') AS DOB
 
@@ -104,6 +105,7 @@
       TO_CHAR(asif.Grade_Level) AS Grade_Level,
       TO_CHAR(asif.First_Name) AS First_Name,
       TO_CHAR(asif.Last_Name) AS Last_Name,
+      TO_CHAR('') AS Email1,
       TO_CHAR(asif.Gender) AS Gender,
       TO_CHAR(asif.Dob, 'MM/DD/YYYY') AS DOB
 
@@ -122,8 +124,16 @@ SELECT
   sfr.City, sfr.State, sfr.Zip,
   sfr.Home_Phone AS Phone1,
   TO_CHAR('Home Phone') AS Phone1Type,
+  hhm.Email1,
   hhm.Gender,
-  hhm.DOB
+  hhm.DOB,
+  CASE
+    WHEN hhm.PersonIndex = 'C1' THEN 'Parent/Guardian'
+    WHEN hhm.PersonIndex = 'C2' THEN 'Second Primary Parent/Guardian'
+    WHEN hhm.PersonIndex = 'C3' THEN 'Second Primary Parent/Guardian'
+    WHEN hhm.PersonIndex LIKE 'S%' THEN 'Watertown Public Schools Student'
+    ELSE TO_CHAR('')
+  END AS Relationship
 
 FROM HouseHoldMembers hhm
 
@@ -132,7 +142,7 @@ JOIN StudentFamilyReps sfr
 
 ORDER BY hhm.Family_Ident, hhm.PersonIndex,
          hhm.Grade_Level, hhm.PersonNumber DESC</textarea></SQLQuery>
-<ReportHeader><th>Column1</th><th>Column2</th><th>Column3</th><th>Column4</th><th>Column5</th><th>Column6</th><th>Column7</th><th>Column8</th><th>Column9</th><th>Column10</th><th>Column11</th><th>Column12</th><th>Column13</th><th>Column14</th><th>Column15</th></ReportHeader>
+<ReportHeader><th>Column1</th><th>Column2</th><th>Column3</th><th>Column4</th><th>Column5</th><th>Column6</th><th>Column7</th><th>Column8</th><th>Column9</th><th>Column10</th><th>Column11</th><th>Column12</th><th>Column13</th><th>Column14</th><th>Column15</th><th>Column16</th><th>Column17</th></ReportHeader>
 <CreateStudentSelection>0</CreateStudentSelection>
 <StudentSelectionQuery></StudentSelectionQuery>
 <CreateStudentSelectionB></CreateStudentSelectionB>

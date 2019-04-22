@@ -85,6 +85,7 @@ WITH StudentFamilyReps AS
       TO_CHAR(0) AS Grade_Level,
       TO_CHAR(pgfr.First_Name) AS First_Name,
       TO_CHAR(pgfr.Last_Name) AS Last_Name,
+      TO_CHAR('') AS Email1,
       TO_CHAR(pgfr.Gender) AS Gender,
       TO_CHAR('99/99/9999') AS DOB
 
@@ -99,6 +100,7 @@ WITH StudentFamilyReps AS
       TO_CHAR(asif.Grade_Level) AS Grade_Level,
       TO_CHAR(asif.First_Name) AS First_Name,
       TO_CHAR(asif.Last_Name) AS Last_Name,
+      TO_CHAR('') AS Email1,
       TO_CHAR(asif.Gender) AS Gender,
       TO_CHAR(asif.Dob, 'MM/DD/YYYY') AS DOB
 
@@ -117,8 +119,16 @@ SELECT
   sfr.City, sfr.State, sfr.Zip,
   sfr.Home_Phone AS Phone1,
   TO_CHAR('Home Phone') AS Phone1Type,
+  hhm.Email1,
   hhm.Gender,
-  hhm.DOB
+  hhm.DOB,
+  CASE
+    WHEN hhm.PersonIndex = 'C1' THEN 'Parent/Guardian'
+    WHEN hhm.PersonIndex = 'C2' THEN 'Second Primary Parent/Guardian'
+    WHEN hhm.PersonIndex = 'C3' THEN 'Second Primary Parent/Guardian'
+    WHEN hhm.PersonIndex LIKE 'S%' THEN 'Watertown Public Schools Student'
+    ELSE TO_CHAR('')
+  END AS Relationship
 
 FROM HouseHoldMembers hhm
 
