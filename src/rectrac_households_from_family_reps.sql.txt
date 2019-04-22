@@ -5,7 +5,8 @@ WITH StudentFamilyReps AS
       s.Family_Ident,
       s.Enroll_Status,
       s.Street,
-      s.City, s.State, s.Zip
+      s.City, s.State, s.Zip,
+      s.Home_Phone
       
     FROM Students s
 
@@ -31,7 +32,9 @@ WITH StudentFamilyReps AS
       s.Enroll_Status AS Enroll_Status,
       s.Grade_Level AS Grade_Level,
       s.Last_Name AS Last_Name,
-      s.First_Name AS First_Name
+      s.First_Name AS First_Name,
+      s.Gender AS Gender,
+      s.Dob AS DOB
 
     FROM Students s
 
@@ -77,7 +80,9 @@ WITH StudentFamilyReps AS
       TO_CHAR(pgfr.GuardianPersonId) AS PersonNumber,
       TO_CHAR(0) AS Grade_Level,
       TO_CHAR(pgfr.First_Name) AS First_Name,
-      TO_CHAR(pgfr.Last_Name) AS Last_Name
+      TO_CHAR(pgfr.Last_Name) AS Last_Name,
+      TO_CHAR('Z') AS Gender,
+      TO_CHAR('7/88/9999') AS DOB
 
     FROM PrimaryGuardiansOfFamilyReps pgfr
 
@@ -89,7 +94,9 @@ WITH StudentFamilyReps AS
       TO_CHAR(asif.Student_Number) AS PersonNumber,
       TO_CHAR(asif.Grade_Level) AS Grade_Level,
       TO_CHAR(asif.First_Name) AS First_Name,
-      TO_CHAR(asif.Last_Name) AS Last_Name
+      TO_CHAR(asif.Last_Name) AS Last_Name,
+      TO_CHAR(asif.Gender) AS Gender,
+      TO_CHAR(asif.Dob, 'MM/DD/YYYY') AS DOB
 
     FROM ActiveStudentsInFamily asif
   )
@@ -103,7 +110,11 @@ SELECT
   hhm.Last_Name,
   hhm.First_Name,
   sfr.Street,
-  sfr.City, sfr.State, sfr.Zip
+  sfr.City, sfr.State, sfr.Zip,
+  sfr.Home_Phone AS Phone1,
+  TO_CHAR('Home Phone') AS Phone1Type,
+  hhm.Gender,
+  hhm.Dob
 
 FROM HouseHoldMembers hhm
 
